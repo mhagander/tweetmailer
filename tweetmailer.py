@@ -58,7 +58,7 @@ if __name__=="__main__":
 			if not first:
 				# Sleep if there is more than one email to send, just so we
 				# don't get rate limited or something
-				time.sleep(1)
+				time.sleep(10)
 			else:
 				first = False
 
