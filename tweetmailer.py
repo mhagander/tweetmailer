@@ -66,6 +66,7 @@ if __name__=="__main__":
 			msg['Subject'] = t['text']
 			msg['To'] = email_to
 			msg['From'] = email_from
+			print "Sending '%s'" % t['text']
 			sendmail(msg)
 
 			if t['id'] > newmax:
