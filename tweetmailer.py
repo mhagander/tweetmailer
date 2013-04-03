@@ -3,6 +3,7 @@
 import sys
 import time
 import urllib
+import re
 import ConfigParser
 from subprocess import Popen, PIPE
 
@@ -49,7 +50,15 @@ if __name__=="__main__":
 		params['since_id'] = lasttweet
 
 	u = urllib.urlopen("http://api.twitter.com/1/statuses/user_timeline.json?%s" % urllib.urlencode(params))
-	d = json.loads(u.read())
+	result = u.read()
+	try:
+		d = json.loads(result)
+	except:
+		if re.search("Twitter is currently down for maintenance.", result):
+			sys.exit(0)
+
+		print "Unable to parse json: %s" % result
+		sys.exit(1)
 
 	if len(d):
 		first = True
@@ -66,8 +75,8 @@ if __name__=="__main__":
 			msg['Subject'] = t['text']
 			msg['To'] = email_to
 			msg['From'] = email_from
-			print "Sending '%s'" % t['text']
 			sendmail(msg)
+			print "Sent '%s'" % t['text']
 
 			if t['id'] > newmax:
 				newmax = t['id']
