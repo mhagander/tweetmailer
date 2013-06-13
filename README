@@ -1,0 +1,19 @@
+To make this thing work, you need a tweetmailer.ini file
+that contains something along the line of:
+
+
+[twitter]
+user = <something>
+consumer=<from twitter>
+consumersecret=<from twitter>
+token=<from twitter>
+secret=<from twitter>
+
+[email]
+from = example@example.com
+to = example@example.com
+
+
+
+Note that you need to register yourself with the twitter developer
+console, and get the secrets and tokens from there.

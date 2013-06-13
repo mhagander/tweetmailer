@@ -5,6 +5,7 @@ import time
 import urllib
 import re
 import ConfigParser
+import oauth2 as oauth
 from subprocess import Popen, PIPE
 
 import simplejson as json
@@ -41,7 +42,16 @@ if __name__=="__main__":
 		lasttweet = 0
 		pass
 
+	# Stupid twitter now requires us to use OAuth to get to public information
+	oauth_token = oauth.Token(cfg.get('twitter', 'token'), cfg.get('twitter', 'secret'))
+	oauth_consumer = oauth.Consumer(cfg.get('twitter', 'consumer'), cfg.get('twitter', 'consumersecret'))
+
 	params = {
+		"oauth_reversion": "1.0",
+		"oauth_nonce": oauth.generate_nonce(),
+		"oauth_timestamp": int(time.time()),
+		"oauth_token": oauth_token.key,
+		"oauth_consumer_key": oauth_consumer.key,
 		"screen_name" : twitteruser,
 		"trim_user" : 1,
 		"include_entities": 0,
@@ -49,7 +59,12 @@ if __name__=="__main__":
 	if lasttweet:
 		params['since_id'] = lasttweet
 
-	u = urllib.urlopen("http://api.twitter.com/1/statuses/user_timeline.json?%s" % urllib.urlencode(params))
+	req = oauth.Request(method='GET',
+						url='https://api.twitter.com/1.1/statuses/user_timeline.json',
+						parameters=params)
+	req.sign_request(oauth.SignatureMethod_HMAC_SHA1(), oauth_consumer, oauth_token)
+	u = urllib.urlopen(req.to_url())
+
 	result = u.read()
 	try:
 		d = json.loads(result)
