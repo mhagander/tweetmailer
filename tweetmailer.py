@@ -86,6 +86,11 @@ if __name__=="__main__":
 			else:
 				first = False
 
+			# Don't repost tweets that start with @, since they are typically
+			# responses, and thus don't belong on fb.
+			if t['text'].startswith('@'):
+				continue
+
 			msg = MIMEText('', _charset='utf-8')
 			msg['Subject'] = t['text']
 			msg['To'] = email_to
